@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shreyas Nagaraju — CAD Portfolio</title>
+  <meta name="description" content="Interactive 3D CAD portfolio of Shreyas Nagaraju: mechanical assemblies, sheet metal, engines, robotics and turbomachinery.">
+  <meta property="og:title" content="Shreyas Nagaraju — CAD Portfolio">
+  <meta property="og:description" content="Interactive 3D CAD portfolio: mechanical assemblies, sheet metal, engines, robotics and turbomachinery.">
+  <meta property="og:image" content="assets/img/jet-render.webp">
+  <meta name="theme-color" content="#0c0e12">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='22' fill='none' stroke='%234da3ff' stroke-width='6'/%3E%3Ccircle cx='32' cy='32' r='7' fill='%234da3ff'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="loader" aria-hidden="true"><div class="spinner"></div><p>Loading 3D studio…</p></div>
+
+  <canvas id="scene" aria-label="Interactive 3D model viewer"></canvas>
+  <div id="progress"></div>
+
+  <header class="top">
+    <a class="brand" href="#top"><span class="mark"></span>Shreyas Nagaraju</a>
+    <button id="menu-btn" class="btn ghost small" aria-expanded="false" aria-controls="index">Projects</button>
+    <nav id="index" aria-label="Projects"><ol id="index-list"></ol></nav>
+  </header>
+
+  <nav id="rail" aria-label="Section navigation"></nav>
+
+  <div id="model-toast" aria-hidden="true">
+    <span class="t-num">Assembly</span>
+    <span class="t-name"></span>
+    <span class="t-bar"><i></i></span>
+  </div>
+
+  <!-- 3D viewer controls -->
+  <div id="viewer-ui" role="group" aria-label="3D viewer controls">
+    <div class="viewer-head">
+      <span class="live-dot"></span><span id="viewer-label"></span>
+      <span class="hint">Drag to orbit</span>
+    </div>
+    <div class="viewer-row">
+      <label id="explode-wrap" class="explode">
+        <span>Explode</span>
+        <input id="explode" type="range" min="0" max="100" value="0" aria-label="Exploded view amount">
+      </label>
+      <div id="materials" class="chips" hidden></div>
+    </div>
+    <div class="viewer-row buttons">
+      <button id="btn-motion" class="btn small" aria-pressed="true"><i class="ic ic-play"></i><span>Pause</span></button>
+      <button id="btn-xray" class="btn small" aria-pressed="false"><i class="ic ic-xray"></i><span>X-ray</span></button>
+      <button id="btn-rotate" class="btn small" aria-pressed="true"><i class="ic ic-rotate"></i>Spin</button>
+      <button id="btn-reset" class="btn small"><i class="ic ic-reset"></i>Reset</button>
+    </div>
+  </div>
+
+  <main>
+    <section class="sec hero" id="top" data-model="hero" data-accent="#4da3ff">
+      <div class="panel hero-panel">
+        <p class="kicker"><span class="num">CAD</span><span>Portfolio</span></p>
+        <h1>Shreyas<br>Nagaraju</h1>
+        <p class="lead">Mechanical Engineering graduate pursuing an <strong>M.S.E. in Manufacturing Systems Engineering</strong> at the University of Michigan–Dearborn <span class="gpa">GPA 3.9</span></p>
+        <p class="sub">3D part models · mechanical assemblies · sheet-metal components · manufacturing fixtures</p>
+        <ul id="tools" class="tags tools" aria-label="CAD software"></ul>
+        <div class="cta">
+          <a class="btn primary" href="#about">Explore the work</a>
+          <span id="hero-links"></span>
+        </div>
+        <p class="scroll-cue" aria-hidden="true"><span></span>Scroll — every project has a live 3D model</p>
+      </div>
+    </section>
+
+    <div id="sections"></div>
+
+    <section class="sec thanks" id="thanks" data-model="wave" data-accent="#ff8a2a">
+      <div class="panel">
+        <p class="kicker"><span class="num">END</span><span>Thanks for visiting</span></p>
+        <h2>Thank you</h2>
+        <p>Thank you for taking the time to explore my work. Each project here was designed to connect functional requirements with practical manufacturing knowledge — from sheet-metal prototypes to complete engine assemblies.</p>
+        <div class="cta"><a class="btn primary" href="#top">Back to top</a><span id="thanks-links"></span></div>
+        <p class="foot">© <span id="year"></span> Shreyas Nagaraju · Models on this page are simplified real-time recreations; the CAD renders, drawings and animations are the original work.</p>
+      </div>
+    </section>
+  </main>
+
+  <div id="lightbox" role="dialog" aria-modal="true" aria-label="Media viewer" hidden>
+    <button id="lb-close" class="lb-btn" aria-label="Close">✕</button>
+    <button id="lb-prev" class="lb-btn" aria-label="Previous">‹</button>
+    <div id="lb-stage"></div>
+    <button id="lb-next" class="lb-btn" aria-label="Next">›</button>
+    <div class="lb-meta"><span id="lb-cap"></span><span id="lb-count"></span></div>
+  </div>
+
+  <noscript><p class="noscript">This portfolio needs JavaScript and WebGL to show the 3D models.</p></noscript>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
